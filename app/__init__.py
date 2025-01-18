@@ -1,5 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS, cross_origin
+import os
 
 db = SQLAlchemy()
 
@@ -7,9 +9,18 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__)
 
+    # Enable CORS globally
+    CORS(
+        app,
+        resources={
+            r"/api/*": {"origins": os.getenv("FRONTEND_URL", "http://localhost:5173")},
+        },
+        supports_credentials=True,
+    )
+
     # PostgreSQL configuration
-    app.config["SQLALCHEMY_DATABASE_URI"] = (
-        "postgresql://flaskuser:flaskpassword@localhost:5432/flaskdb"
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+        "DATABASE_URL", "postgresql://flaskuser:flaskpassword@localhost:5432/flaskdb"
     )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
