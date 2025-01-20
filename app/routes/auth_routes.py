@@ -89,8 +89,9 @@ def validate_token():
     """
     Validate the provided JWT and return decoded user information.
     """
-    data = request.get_json()
-    token = data.get("token")
+    # data = request.get_json()
+    # get token from cookies
+    token = request.cookies.get("jwt")
 
     if not token:
         return jsonify({"error": "Token is required"}), 400
