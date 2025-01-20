@@ -58,7 +58,9 @@ def login():
         token = generate_token(user.id)
 
         # Set the JWT as a cookie
-        response = make_response(jsonify({"message": "Login successful"}), 200)
+        response = make_response(
+            jsonify({"message": "Login successful", "token": token}), 200
+        )
         response.set_cookie("jwt", token, httponly=True, secure=True, samesite="Strict")
         return response
 
@@ -94,7 +96,10 @@ def signup():
         current_app.logger.info(f"User {username} registered successfully")
 
         response = make_response(
-            jsonify({"message": f"User {username} registered successfully"}), 201
+            jsonify(
+                {"message": f"User {username} registered successfully", "token": token}
+            ),
+            201,
         )
         response.set_cookie("jwt", token, httponly=True, secure=True, samesite="Strict")
         return response
