@@ -82,3 +82,44 @@ def logout():
         "jwt", "", httponly=True, secure=True, samesite="Strict", expires=0
     )
     return response
+
+
+@auth_bp.route("/validate-token", methods=["POST"])
+def validate_token():
+    """
+    Validate the provided JWT and return decoded user information.
+    """
+    data = request.get_json()
+    token = data.get("token")
+
+    if not token:
+        return jsonify({"error": "Token is required"}), 400
+
+    try:
+        # Decode the token
+        decoded_token = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        user_id = decoded_token.get("user_id")
+
+        # Verify that the user exists in the database
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({"error": "Invalid token: user not found"}), 401
+
+        return (
+            jsonify(
+                {
+                    "message": "Token is valid",
+                    "user": {
+                        "id": user.id,
+                        "email": user.email,
+                        "username": user.username,
+                    },
+                }
+            ),
+            200,
+        )
+
+    except jwt.ExpiredSignatureError:
+        return jsonify({"error": "Token has expired"}), 401
+    except jwt.InvalidTokenError:
+        return jsonify({"error": "Invalid token"}), 401
