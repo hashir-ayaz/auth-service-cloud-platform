@@ -20,7 +20,8 @@ def create_app():
             r"/api/*": {
                 "origins": [
                     os.getenv("FRONTEND_URL", "http://localhost:5173"),
-                    "http://localhost:5001",  # Add localhost:5001
+                    "http://localhost:5001",
+                    "http://frontend_container:5173",
                 ]
             },
         },
