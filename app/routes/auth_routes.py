@@ -1,4 +1,4 @@
-import jwt
+import jwt as pyjwt
 import datetime
 import logging
 from flask import Blueprint, request, jsonify, make_response, current_app
@@ -32,7 +32,7 @@ def generate_token(user_id):
             + datetime.timedelta(hours=1),  # Token expiration
             "iat": datetime.datetime.utcnow(),  # Issued at
         }
-        token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+        token = pyjwt.encode(payload, SECRET_KEY, algorithm="HS256")
         logger.info(f"Token generated for user ID: {user_id}")
         return token
     except Exception as e:
