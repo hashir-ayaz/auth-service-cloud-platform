@@ -14,16 +14,22 @@ def create_app():
     # Enable CORS globally
 
     # Enable CORS globally
+    # CORS(
+    #     app,
+    #     resources={
+    #         r"/api/*": {
+    #             "origins": [
+    #                 os.getenv("FRONTEND_URL", "http://localhost:5173"),
+    #                 "http://localhost:5001",  # Add localhost:5001
+    #             ]
+    #         },
+    #     },
+    #     supports_credentials=True,
+    # )
     CORS(
         app,
         resources={
-            r"/api/*": {
-                "origins": [
-                    os.getenv("FRONTEND_URL", "http://localhost:5173"),
-                    "http://localhost:5001",
-                    "http://frontend_container:5173",
-                ]
-            },
+            r"/api/*": {"origins": "*"},  # Allow all origins for routes starting with /api/
         },
         supports_credentials=True,
     )
