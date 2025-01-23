@@ -138,7 +138,7 @@ def validate_token():
 
     try:
         # Decode the token
-        decoded_token = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        decoded_token = pyjwt.decode(token, SECRET_KEY, algorithms=["HS256"])
         current_app.logger.info(f"Token decoded: {decoded_token}")
         user_id = decoded_token.get("user_id")
         current_app.logger.info(f"Token decoded successfully for user ID: {user_id}")
