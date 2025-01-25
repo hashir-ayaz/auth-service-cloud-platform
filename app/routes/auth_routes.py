@@ -40,7 +40,6 @@ def generate_token(user_id):
         raise
 
 
-# Login route
 @auth_bp.route("/login", methods=["POST"])
 def login():
     current_app.logger.info("Login endpoint hit")
@@ -57,18 +56,12 @@ def login():
         current_app.logger.info(f"User {email} logged in successfully")
         token = generate_token(user.id)
 
-        # Set the JWT as a cookie
-        response = make_response(
-            jsonify({"message": "Login successful", "token": token}), 200
-        )
-        response.set_cookie("jwt", token, httponly=True, secure=True, samesite="Strict")
-        return response
+        # Return the JWT in the response body
+        return jsonify({"message": "Login successful", "token": token}), 200
 
     current_app.logger.warning(f"Login failed: Invalid credentials for email {email}")
     return jsonify({"error": "Invalid credentials"}), 401
 
-
-# Signup route
 @auth_bp.route("/signup", methods=["POST"])
 def signup():
     current_app.logger.info("Signup endpoint hit")
@@ -95,30 +88,18 @@ def signup():
         token = generate_token(new_user.id)
         current_app.logger.info(f"User {username} registered successfully")
 
-        response = make_response(
-            jsonify(
-                {"message": f"User {username} registered successfully", "token": token}
-            ),
-            201,
-        )
-        response.set_cookie("jwt", token, httponly=True, secure=True, samesite="Strict")
-        return response
+        # Return the JWT in the response body
+        return jsonify(
+            {"message": f"User {username} registered successfully", "token": token}
+        ), 201
     except Exception as e:
         current_app.logger.error(f"Signup failed for {email}: {str(e)}")
         return jsonify({"error": "Internal server error"}), 500
 
-
-# Logout route
 @auth_bp.route("/logout", methods=["POST"])
 def logout():
     current_app.logger.info("Logout endpoint hit")
-    response = make_response(jsonify({"message": "Logged out successfully"}), 200)
-    response.set_cookie(
-        "jwt", "", httponly=True, secure=True, samesite="Strict", expires=0
-    )
-    current_app.logger.info("User logged out successfully")
-    return response
-
+    return jsonify({"message": "Logged out successfully"}), 200
 
 # Token validation route
 @auth_bp.route("/validate-token", methods=["POST"])

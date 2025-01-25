@@ -11,25 +11,19 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__)
 
-    # Enable CORS globally
+    # List of allowed origins
+    ALLOWED_ORIGINS = [
+        "http://localhost:5173",  # Local development
+        "http://142.93.214.0:5173",  # Your other frontend URL
+        "http://localhost:5174",  # Local development
+        
+    ]
 
     # Enable CORS globally
-    # CORS(
-    #     app,
-    #     resources={
-    #         r"/api/*": {
-    #             "origins": [
-    #                 os.getenv("FRONTEND_URL", "http://localhost:5173"),
-    #                 "http://localhost:5001",  # Add localhost:5001
-    #             ]
-    #         },
-    #     },
-    #     supports_credentials=True,
-    # )
     CORS(
         app,
         resources={
-            r"/api/*": {"origins": "*"},  # Allow all origins for routes starting with /api/
+            r"/api/*": {"origins": ALLOWED_ORIGINS},  # Allow specific origins for routes starting with /api/
         },
         supports_credentials=True,
     )
