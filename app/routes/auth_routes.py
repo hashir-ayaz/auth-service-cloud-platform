@@ -57,7 +57,8 @@ def login():
         token = generate_token(user.id)
 
         # Return the JWT in the response body
-        return jsonify({"message": "Login successful", "token": token}), 200
+        return jsonify({"message": "Login successful", "token": token,
+                        "user": {"id": user.id, "email": user.email, "username": user.username}}), 200
 
     current_app.logger.warning(f"Login failed: Invalid credentials for email {email}")
     return jsonify({"error": "Invalid credentials"}), 401
@@ -90,7 +91,8 @@ def signup():
 
         # Return the JWT in the response body
         return jsonify(
-            {"message": f"User {username} registered successfully", "token": token}
+            {"message": f"User {username} registered successfully", "token": token,
+             "user": {"id": new_user.id, "email": new_user.email, "username": new_user.username}}
         ), 201
     except Exception as e:
         current_app.logger.error(f"Signup failed for {email}: {str(e)}")
