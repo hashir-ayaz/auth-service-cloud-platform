@@ -29,7 +29,7 @@ def generate_token(user_id):
         payload = {
             "user_id": user_id,
             "exp": datetime.datetime.utcnow()
-            + datetime.timedelta(hours=1),  # Token expiration
+            + datetime.timedelta(hours=5),  # Token expiration
             "iat": datetime.datetime.utcnow(),  # Issued at
         }
         token = pyjwt.encode(payload, SECRET_KEY, algorithm="HS256")
@@ -57,11 +57,24 @@ def login():
         token = generate_token(user.id)
 
         # Return the JWT in the response body
-        return jsonify({"message": "Login successful", "token": token,
-                        "user": {"id": user.id, "email": user.email, "username": user.username}}), 200
+        return (
+            jsonify(
+                {
+                    "message": "Login successful",
+                    "token": token,
+                    "user": {
+                        "id": user.id,
+                        "email": user.email,
+                        "username": user.username,
+                    },
+                }
+            ),
+            200,
+        )
 
     current_app.logger.warning(f"Login failed: Invalid credentials for email {email}")
     return jsonify({"error": "Invalid credentials"}), 401
+
 
 @auth_bp.route("/signup", methods=["POST"])
 def signup():
@@ -90,18 +103,30 @@ def signup():
         current_app.logger.info(f"User {username} registered successfully")
 
         # Return the JWT in the response body
-        return jsonify(
-            {"message": f"User {username} registered successfully", "token": token,
-             "user": {"id": new_user.id, "email": new_user.email, "username": new_user.username}}
-        ), 201
+        return (
+            jsonify(
+                {
+                    "message": f"User {username} registered successfully",
+                    "token": token,
+                    "user": {
+                        "id": new_user.id,
+                        "email": new_user.email,
+                        "username": new_user.username,
+                    },
+                }
+            ),
+            201,
+        )
     except Exception as e:
         current_app.logger.error(f"Signup failed for {email}: {str(e)}")
         return jsonify({"error": "Internal server error"}), 500
+
 
 @auth_bp.route("/logout", methods=["POST"])
 def logout():
     current_app.logger.info("Logout endpoint hit")
     return jsonify({"message": "Logged out successfully"}), 200
+
 
 # Token validation route
 @auth_bp.route("/validate-token", methods=["POST"])
@@ -149,10 +174,10 @@ def validate_token():
             200,
         )
 
-    except jwt.ExpiredSignatureError:
+    except pyjwt.ExpiredSignatureError:
         current_app.logger.warning("Token validation failed: Token has expired")
         return jsonify({"error": "Token has expired"}), 401
-    except jwt.InvalidTokenError:
+    except pyjwt.InvalidTokenError:
         current_app.logger.warning("Token validation failed: Invalid token")
         return jsonify({"error": "Invalid token"}), 401
     except Exception as e:
