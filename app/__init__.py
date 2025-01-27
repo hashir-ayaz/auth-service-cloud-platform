@@ -16,14 +16,16 @@ def create_app():
         "http://localhost:5173",  # Local development
         "http://142.93.214.0:5173",  # Your other frontend URL
         "http://localhost:5174",  # Local development
-        
+        "http://localhost:4173",
     ]
 
     # Enable CORS globally
     CORS(
         app,
         resources={
-            r"/api/*": {"origins": ALLOWED_ORIGINS},  # Allow specific origins for routes starting with /api/
+            r"/api/*": {
+                "origins": ALLOWED_ORIGINS
+            },  # Allow specific origins for routes starting with /api/
         },
         supports_credentials=True,
     )
